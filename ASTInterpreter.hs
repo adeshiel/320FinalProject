@@ -5,6 +5,39 @@ import Data.Map(Map, lookup, insert, empty, fromList)  -- for State
 
 import EnvUnsafe
 
+type Program = [Funcs]
+
+data Funcs = Funcs Func Funcs | Solo Func
+data Func = DefineEmpty Identifier Stmts | Define Identifier Identifier Stmts
+data Stmts = Statements [Stmt] | Statement Stmt | B Block | BS Block (Stmts)
+data Stmt = Assign String Expr | Return Expr | Print Identifier | Break | Continue
+data Block = Code [Stmt] | While BExpr Block | If BExpr Block | IfElse BExpr Block Block
+
+data BFactor = Condition Cond | Not BFactor | BExpression (BExpr)
+data BTerm = And BFactor BTerm | BVal BFactor
+data BExpr = Or BTerm BExpr | BT Bterm
+
+data Cond = Equals Expr Expr
+          | NotEquals Expr Expr
+          | LT Expr Expr
+          | LTE Expr Expr
+          | GT Expr Expr
+          | GTE Expr Expr
+
+data Identifier = Var String | Exp (Expr)
+
+data Expr = Plus Expr Term | Minus Expr Term | T Term
+
+data Term = Mult Term Factor | Div Term Factor | Mod Term Factor | Val Factor
+
+data Factor = I Integer
+            | Neg Integer
+            | Expression Expr
+            | Identity Identifier
+
+
+
+
 
 data Ast = ValBool Bool
          | And Ast Ast | Or Ast Ast | Not Ast
